@@ -1,56 +1,34 @@
 return {
-	['testburger'] = {
-		label = 'Test Burger',
-		weight = 220,
-		degrade = 60,
-		client = {
-			status = { hunger = 200000 },
-			anim = 'eating',
-			prop = 'burger',
-			usetime = 2500,
-			export = 'ox_inventory_examples.testburger'
-		},
-		server = {
-			export = 'ox_inventory_examples.testburger',
-			test = 'what an amazingly delicious burger, amirite?'
-		},
-		buttons = {
-			{
-				label = 'Lick it',
-				action = function(slot)
-					print('You licked the burger')
-				end
-			},
-			{
-				label = 'Squeeze it',
-				action = function(slot)
-					print('You squeezed the burger :(')
-				end
-			}
-		},
-		consume = 0.3
-	},
-
-	['bandage'] = {
-		label = 'Bandage',
-		weight = 115,
-		client = {
-			anim = { dict = 'missheistdockssetup1clipboard@idle_a', clip = 'idle_a', flag = 49 },
-			prop = { model = `prop_rolled_sock_02`, pos = vec3(-0.14, -0.14, -0.08), rot = vec3(-50.0, -50.0, 0.0) },
-			disable = { move = true, car = true, combat = true },
-			usetime = 2500,
-		}
+	-- currency
+	['money'] = {
+		label = 'Money',
 	},
 
 	['black_money'] = {
 		label = 'Dirty Money',
 	},
 
+	['sov_coin'] = {
+		label = 'SC',
+	},
+
+	-- cards
+	['identification'] = {
+		label = 'Identification',
+	},
+
+	['mastercard'] = {
+		label = 'Mastercard',
+		stack = false,
+		weight = 10,
+	},
+
+	-- food & beverage
 	['burger'] = {
 		label = 'Burger',
 		weight = 220,
 		client = {
-			status = { hunger = 200000 },
+			status = { hunger = -70 },
 			anim = 'eating',
 			prop = 'burger',
 			usetime = 2500,
@@ -62,7 +40,7 @@ return {
 		label = 'eCola',
 		weight = 350,
 		client = {
-			status = { thirst = 200000 },
+			status = { thirst = -45 },
 			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
 			prop = { model = `prop_ecola_can`, pos = vec3(0.01, 0.01, 0.06), rot = vec3(5.0, 5.0, -180.5) },
 			usetime = 2500,
@@ -70,49 +48,71 @@ return {
 		}
 	},
 
-	['parachute'] = {
-		label = 'Parachute',
-		weight = 8000,
-		stack = false,
+	['mustard'] = {
+		label = 'Mustard',
+		weight = 500,
 		client = {
-			anim = { dict = 'clothingshirt', clip = 'try_shirt_positive_d' },
-			usetime = 1500
+			status = { hunger = -10, thirst = 25 },
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_food_mustard`, pos = vec3(0.01, 0.0, -0.07), rot = vec3(1.0, 1.0, -1.5) },
+			usetime = 2500,
+			notification = 'You... drank mustard'
 		}
 	},
 
-	['garbage'] = {
-		label = 'Garbage',
+	['water'] = {
+		label = 'Water',
+		weight = 500,
+		client = {
+			status = { thirst = -40 },
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_ld_flow_bottle`, pos = vec3(0.03, 0.03, 0.02), rot = vec3(0.0, 0.0, -1.5) },
+			usetime = 2500,
+			cancel = true,
+			notification = 'You drank some refreshing water'
+		}
 	},
 
+	-- health & armour
+	['bandage'] = {
+		label = 'Bandage',
+		weight = 115,
+		client = {
+			anim = { dict = 'missheistdockssetup1clipboard@idle_a', clip = 'idle_a', flag = 49 },
+			prop = { model = `prop_rolled_sock_02`, pos = vec3(-0.14, -0.14, -0.08), rot = vec3(-50.0, -50.0, 0.0) },
+			disable = { move = true, car = true, combat = true },
+			usetime = 2500,
+		}
+	},
+
+	['armour'] = {
+		label = 'Bulletproof Vest',
+		weight = 3000,
+		stack = false,
+		client = {
+			anim = { dict = 'clothingshirt', clip = 'try_shirt_positive_d' },
+			usetime = 3500
+		}
+	},
+
+	-- containers
 	['paperbag'] = {
 		label = 'Paper Bag',
-		weight = 1,
+		weight = 10,
 		stack = false,
 		close = false,
 		consume = 0
 	},
 
-	['identification'] = {
-		label = 'Identification',
+	['wallet'] = {
+		label = 'Wallet',
+		weight = 100,
+		stack = false,
+		close = false,
+		consume = 0
 	},
 
-	['panties'] = {
-		label = 'Knickers',
-		weight = 10,
-		consume = 0,
-		client = {
-			status = { thirst = -100000, stress = -25000 },
-			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
-			prop = { model = `prop_cs_panties_02`, pos = vec3(0.03, 0.0, 0.02), rot = vec3(0.0, -13.5, -1.5) },
-			usetime = 2500,
-		}
-	},
-
-	['lockpick'] = {
-		label = 'Lockpick',
-		weight = 160,
-	},
-
+	-- electronics
 	['phone'] = {
 		label = 'Phone',
 		weight = 190,
@@ -133,34 +133,6 @@ return {
 		}
 	},
 
-	['money'] = {
-		label = 'Money',
-	},
-
-	['mustard'] = {
-		label = 'Mustard',
-		weight = 500,
-		client = {
-			status = { hunger = 25000, thirst = 25000 },
-			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
-			prop = { model = `prop_food_mustard`, pos = vec3(0.01, 0.0, -0.07), rot = vec3(1.0, 1.0, -1.5) },
-			usetime = 2500,
-			notification = 'You.. drank mustard'
-		}
-	},
-
-	['water'] = {
-		label = 'Water',
-		weight = 500,
-		client = {
-			status = { thirst = 200000 },
-			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
-			prop = { model = `prop_ld_flow_bottle`, pos = vec3(0.03, 0.03, 0.02), rot = vec3(0.0, 0.0, -1.5) },
-			usetime = 2500,
-			cancel = true,
-			notification = 'You drank some refreshing water'
-		}
-	},
 
 	['radio'] = {
 		label = 'Radio',
@@ -169,29 +141,45 @@ return {
 		allowArmed = true
 	},
 
-	['armour'] = {
-		label = 'Bulletproof Vest',
-		weight = 3000,
+	-- tools
+	--saw
+	--blowtorch
+	--handcuffs
+	--spikestrips
+
+	['lockpick'] = {
+		label = 'Lockpick',
+		weight = 160,
+	},
+
+	['parachute'] = {
+		label = 'Parachute',
+		weight = 8000,
 		stack = false,
 		client = {
 			anim = { dict = 'clothingshirt', clip = 'try_shirt_positive_d' },
-			usetime = 3500
+			usetime = 1500
 		}
 	},
 
-	['clothing'] = {
-		label = 'Clothing',
-		consume = 0,
-	},
-
-	['mastercard'] = {
-		label = 'Mastercard',
-		stack = false,
-		weight = 10,
+	['garbage'] = {
+		label = 'Garbage',
 	},
 
 	['scrapmetal'] = {
 		label = 'Scrap Metal',
 		weight = 80,
+	},
+
+	['panties'] = {
+		label = 'Knickers',
+		weight = 10,
+		consume = 0,
+		client = {
+			status = { thirst = 50, stress = -25 },
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_cs_panties_02`, pos = vec3(0.03, 0.0, 0.02), rot = vec3(0.0, -13.5, -1.5) },
+			usetime = 2500,
+		}
 	},
 }
