@@ -1,17 +1,7 @@
 if not lib then return end
 
 local shops = {}
-
-local function createBlip(settings, coords)
-	local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-	SetBlipSprite(blip, settings.id)
-	SetBlipDisplay(blip, 4)
-	SetBlipScale(blip, settings.scale)
-	SetBlipColour(blip, settings.colour)
-	SetBlipAsShortRange(blip, true)
-	BeginTextCommandSetBlipName(settings.name)
-	EndTextCommandSetBlipName(blip)
-end
+local createBlip = client.utils.CreateBlip
 
 local function openShop(data)
 	client.openInventory('shop', data)
@@ -61,11 +51,14 @@ client.shops = setmetatable(data('shops'), {
 			if not shop.groups or client.hasGroup(shop.groups) then
 				if shared.target then
 					if shop.model then
+						local label = shop.label or locale('open_label', shop.name)
+
+						exports.qtarget:RemoveTargetModel(shop.model, label)
 						exports.qtarget:AddTargetModel(shop.model, {
 							options = {
 								{
 									icon = 'fas fa-shopping-basket',
-									label = shop.label or locale('open_label', shop.name),
+									label = label,
 									action = function()
 										openShop({type=type})
 									end
