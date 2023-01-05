@@ -162,6 +162,16 @@ return {
 		}
 	},
 
+	-- evidence
+	['case'] = {
+		label = 'Case',
+	},
+
+	['slug'] = {
+		label = 'Slug',
+	},
+
+	-- other
 	['garbage'] = {
 		label = 'Garbage',
 	},
