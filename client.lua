@@ -470,7 +470,6 @@ exports('openNearbyInventory', openNearbyInventory)
 local currentInstance
 local playerCoords
 local table = lib.table
-local Shops = client.shops
 local Inventory = client.inventory
 
 ---@todo remove or replace when the bridge module gets restructured
@@ -480,7 +479,7 @@ function OnPlayerData(key, val)
 	if key == 'groups' then
 		Inventory.Stashes()
 		Inventory.Evidence()
-		Shops()
+		client.refreshShops()
 	elseif key == 'dead' and val then
 		currentWeapon = Weapon.Disarm(currentWeapon)
 		client.closeInventory()
@@ -490,7 +489,7 @@ function OnPlayerData(key, val)
 end
 
 -- People consistently ignore errors when one of the "modules" failed to load
-if not Utils or not Weapon or not Items or not Shops or not Inventory then return end
+if not Utils or not Weapon or not Items or not Inventory then return end
 
 local invHotkeys = false
 
@@ -891,12 +890,17 @@ end
 ---@param point CPoint
 local function onEnterDrop(point)
 	if not point.instance or point.instance == currentInstance and not point.entity then
-		lib.requestModel(`prop_med_bag_01b`)
-		local entity = CreateObject(`prop_med_bag_01b`, point.coords.x, point.coords.y, point.coords.z, false, true, true)
-		SetModelAsNoLongerNeeded(`prop_med_bag_01b`)
+		local model = point.model or `prop_med_bag_01b`
+
+		lib.requestModel(model)
+
+		local entity = CreateObject(model, point.coords.x, point.coords.y, point.coords.z, false, true, true)
+
+		SetModelAsNoLongerNeeded(model)
 		PlaceObjectOnGroundProperly(entity)
 		FreezeEntityPosition(entity, true)
 		SetEntityCollision(entity, false, true)
+
 		point.entity = entity
 	end
 end
@@ -916,6 +920,7 @@ local function createDrop(dropId, data)
 		distance = 16,
 		invId = dropId,
 		instance = data.instance,
+		model = data.model
 	})
 
 	if client.dropprops then
@@ -1150,7 +1155,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 	PlayerData.loaded = true
 
 	lib.notify({ description = locale('inventory_setup') })
-	Shops()
+	client.refreshShops()
 	Inventory.Stashes()
 	Inventory.Evidence()
 	registerCommands()
