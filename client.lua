@@ -260,14 +260,15 @@ lib.callback.register('ox_inventory:usingItem', function(data)
 end)
 
 local function canUseItem(isAmmo)
-	return PlayerData.loaded
+	local ped = cache.ped
+
+	return (not isAmmo or currentWeapon)
+	and PlayerData.loaded
 	and not PlayerData.dead
 	and not invBusy
 	and not lib.progressActive()
-	and (IsPlayerFreeForAmbientTask(cache.playerId)
-		or cache.vehicle
-		or (isAmmo and currentWeapon and IsPlayerFreeAiming(cache.playerId))
-		or IsPedInCover(cache.ped, false))
+	and not IsPedRagdoll(ped)
+	and not IsPedFalling(ped)
 end
 
 ---@param data table
@@ -931,11 +932,11 @@ local function createDrop(dropId, data)
 		point.nearby = nearbyDrop
 	end
 
-	drops[dropId] = point
+	client.drops[dropId] = point
 end
 
 RegisterNetEvent('ox_inventory:createDrop', function(dropId, data, owner, slot)
-	if drops then
+	if client.drops then
 		createDrop(dropId, data)
 	end
 
@@ -958,11 +959,11 @@ RegisterNetEvent('ox_inventory:createDrop', function(dropId, data, owner, slot)
 end)
 
 RegisterNetEvent('ox_inventory:removeDrop', function(dropId)
-	if drops then
-		local point = drops[dropId]
+	if client.drops then
+		local point = client.drops[dropId]
 
 		if point then
-			drops[dropId] = nil
+			client.drops[dropId] = nil
 			point:remove()
 
 			if point.entity then Utils.DeleteObject(point.entity) end
@@ -1085,7 +1086,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 		end
 	end
 
-	drops = currentDrops
+	client.drops = currentDrops
 
 	for dropId, data in pairs(currentDrops) do
 		createDrop(dropId, data)
