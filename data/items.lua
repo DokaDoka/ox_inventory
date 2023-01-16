@@ -96,6 +96,18 @@ return {
 	},
 
 	-- containers
+	['evidencebag'] = {
+		label = 'Evidence Bag',
+		weight = 1000,
+		stack = false,
+		close = false,
+		consume = 0,
+		whitelist = {
+			['case'] = true,
+			['slug'] = true,
+		}
+	},
+
 	['paperbag'] = {
 		label = 'Paper Bag',
 		weight = 10,
@@ -133,7 +145,6 @@ return {
 		}
 	},
 
-
 	['radio'] = {
 		label = 'Radio',
 		weight = 1000,
@@ -144,12 +155,29 @@ return {
 	-- tools
 	--saw
 	--blowtorch
-	--handcuffs
-	--spikestrips
+
+	['handcuffkey'] = {
+		label = 'Handcuff Key',
+		weight = 50,
+	},
+
+	['handcuffs'] = {
+		label = 'Handcuffs',
+		weight = 300,
+	},
 
 	['lockpick'] = {
 		label = 'Lockpick',
 		weight = 160,
+	},
+
+	['spikestrip'] = {
+		label = 'Spike Strip',
+		weight = 1000,
+		stack = false,
+		client = {
+			export = 'ox_police.deploySpikestrip'
+		}
 	},
 
 	['parachute'] = {
