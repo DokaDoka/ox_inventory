@@ -32,6 +32,7 @@ return {
 			anim = 'eating',
 			prop = 'burger',
 			usetime = 2500,
+			cancel = true,
 			notification = 'You ate a delicious burger'
 		},
 	},
@@ -44,6 +45,7 @@ return {
 			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
 			prop = { model = `prop_ecola_can`, pos = vec3(0.01, 0.01, 0.06), rot = vec3(5.0, 5.0, -180.5) },
 			usetime = 2500,
+			cancel = true,
 			notification = 'You quenched your thirst with cola'
 		}
 	},
@@ -56,6 +58,7 @@ return {
 			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
 			prop = { model = `prop_food_mustard`, pos = vec3(0.01, 0.0, -0.07), rot = vec3(1.0, 1.0, -1.5) },
 			usetime = 2500,
+			cancel = true,
 			notification = 'You... drank mustard'
 		}
 	},
@@ -113,7 +116,8 @@ return {
 		weight = 10,
 		stack = false,
 		close = false,
-		consume = 0
+		consume = 0,
+		size = {5, 1000}
 	},
 
 	['wallet'] = {
@@ -121,7 +125,14 @@ return {
 		weight = 100,
 		stack = false,
 		close = false,
-		consume = 0
+		consume = 0,
+		whitelist = {
+			['money'] = true,
+			['black_money'] = true,
+			['sov_coin'] = true,
+			['identification'] = true,
+			['mastercard'] = true,
+		}
 	},
 
 	-- electronics
