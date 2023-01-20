@@ -642,6 +642,8 @@ local function registerCommands()
 								return
 							end
 
+							Wait(500)
+
 							if type(open) == 'table' then
 								for i = 1, #open do
 									SetVehicleDoorOpen(vehicle, open[i], false, false)
