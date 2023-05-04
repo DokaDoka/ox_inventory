@@ -1,13 +1,13 @@
 import React from 'react';
-import { DragSource, Inventory, InventoryType, Slot } from '../../typings';
-import { useDrag, useDrop } from 'react-dnd';
+import { DragSource, Inventory, InventoryType, Slot, SlotWithItem } from '../../typings';
+import { useDrag, useDragDropManager, useDrop } from 'react-dnd';
 import { useAppDispatch, useAppSelector } from '../../store';
 import WeightBar from '../utils/WeightBar';
 import { onDrop } from '../../dnd/onDrop';
 import { onBuy } from '../../dnd/onBuy';
 import { selectIsBusy } from '../../store/inventory';
 import { Items } from '../../store/items';
-import { canCraftItem, isShopStockEmpty, isSlotWithItem } from '../../helpers';
+import { canCraftItem, getItemUrl, canPurchaseItem, isSlotWithItem } from '../../helpers';
 import { onUse } from '../../dnd/onUse';
 import { Locale } from '../../store/locale';
 import { Tooltip } from '@mui/material';
@@ -15,6 +15,8 @@ import SlotTooltip from './SlotTooltip';
 import { setContextMenu } from '../../store/inventory';
 import { imagepath } from '../../store/imagepath';
 import { onCraft } from '../../dnd/onCraft';
+import useNuiEvent from '../../hooks/useNuiEvent';
+import { ItemsPayload } from '../../reducers/refreshSlots';
 
 interface SlotProps {
   inventory: Inventory;
@@ -22,8 +24,13 @@ interface SlotProps {
 }
 
 const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
+  const manager = useDragDropManager();
   const isBusy = useAppSelector(selectIsBusy);
   const dispatch = useAppDispatch();
+
+  const canDrag = React.useCallback(() => {
+    return !isBusy && canPurchaseItem(item, inventory) && canCraftItem(item, inventory.type);
+  }, [item, inventory, isBusy]);
 
   const [{ isDragging }, drag] = useDrag<DragSource, void, { isDragging: boolean }>(
     () => ({
@@ -39,11 +46,10 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
                 name: item.name,
                 slot: item.slot,
               },
-              image: item.metadata?.image,
-              imageurl: item.metadata?.imageurl,
+              image: item?.name ? getItemUrl(item as SlotWithItem) : 'none',
             }
           : null,
-      canDrag: !isBusy && !isShopStockEmpty(item.count, inventory.type) && canCraftItem(item, inventory.type),
+      canDrag,
     }),
     [isBusy, inventory, item]
   );
@@ -83,6 +89,19 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
     }),
     [isBusy, inventory, item]
   );
+
+  useNuiEvent('refreshSlots', (data: { items?: ItemsPayload | ItemsPayload[] }) => {
+    if (!isDragging && !data.items) return;
+    if (!Array.isArray(data.items)) return;
+
+    const itemSlot = data.items.find(
+      (dataItem) => dataItem.item.slot === item.slot && dataItem.inventory === inventory.id
+    );
+
+    if (!itemSlot) return;
+
+    manager.dispatch({ type: 'dnd-core/END_DRAG' });
+  });
 
   const connectRef = (element: HTMLDivElement) => drag(drop(element));
 
@@ -124,11 +143,11 @@ const InventorySlot: React.FC<SlotProps> = ({ inventory, item }) => {
         className="inventory-slot"
         style={{
           filter:
-            isShopStockEmpty(item.count, inventory.type) || !canCraftItem(item, inventory.type)
+            !canPurchaseItem(item, inventory) || !canCraftItem(item, inventory.type)
               ? 'brightness(80%) grayscale(100%)'
               : undefined,
           opacity: isDragging ? 0.4 : 1.0,
-          backgroundImage: `url(${`${item.metadata?.image ? `${imagepath}/${item.metadata.image}.png` : item.metadata?.imageurl ? item.metadata.imageurl : `${imagepath}/${item.name}.png`}`})`,
+          backgroundImage: getItemUrl(item as SlotWithItem) || 'none',
           border: isOver ? '1px dashed rgba(255,255,255,0.4)' : '',
         }}
       >
