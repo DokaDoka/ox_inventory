@@ -358,7 +358,7 @@ return {
 			label = 'Marksman Pistol',
 			weight = 1588,
 			durability = 0.5,
-			ammoname = 'ammo-22'
+			ammoname = 'ammo-45-70'
 		},
 
 		['WEAPON_MARKSMANRIFLE'] = {
@@ -1627,11 +1627,6 @@ return {
 	},
 
 	Ammo = {
-		['ammo-22'] = {
-			label = '.22 Long Rifle',
-			weight = 3,
-		},
-
 		['ammo-38'] = {
 			label = '.38 LC',
 			weight = 15,
@@ -1645,6 +1640,11 @@ return {
 		['ammo-45'] = {
 			label = '.45 ACP',
 			weight = 15,
+		},
+
+		['ammo-45-70'] = {
+			label = '45-70',
+			weight = 32,
 		},
 
 		['ammo-50'] = {
