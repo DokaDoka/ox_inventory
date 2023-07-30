@@ -2,9 +2,31 @@ if not lib then return end
 
 local Items = require 'modules.items.shared' --[[@as table<string, OxClientItem>]]
 
+--- use array of single key value pairs to dictate order
+---@param metadata string | table<string, string> | table<string, string>[]
+---@param value? string
 local function displayMetadata(metadata, value)
-	local data = metadata
-	if type(metadata) == 'string' and value then data = { [metadata] = value } end
+	local data = {}
+
+	if type(metadata) == 'string' and value then data = { [1] = { metadata = metadata, value = value } }
+	elseif metadata[1] then -- assume its an array
+		for i = 1, #metadata do
+			for k, v in pairs(metadata[i]) do
+				data[i] = {
+					metadata = k,
+					value = v,
+				}
+			end
+		end
+	else
+		for k, v in pairs(metadata) do
+			data[#data+1] = {
+				metadata = k,
+				value = v,
+			}
+		end
+	end
+
 	SendNUIMessage({
 		action = 'displayMetadata',
 		data = data
@@ -12,14 +34,29 @@ local function displayMetadata(metadata, value)
 end
 exports('displayMetadata', displayMetadata)
 
-local function GetItem(item)
-	if item then
-		item = string.lower(item)
-		if item:sub(0, 7) == 'weapon_' then item = string.upper(item) end
-		return Items[item]
-	end
-	return Items
+---@param _ table?
+---@param name string?
+---@return table?
+local function getItem(_, name)
+    if not name then return Items end
+
+	if type(name) ~= 'string' then return end
+
+    name = name:lower()
+
+    if name:sub(0, 7) == 'weapon_' then
+        name = name:upper()
+    end
+
+    return Items[name]
 end
+
+setmetatable(Items --[[@as table]], {
+	__call = getItem
+})
+
+---@cast Items +fun(itemName: string): OxClientItem
+---@cast Items +fun(): table<string, OxClientItem>
 
 local function Item(name, cb)
 	local item = Items[name]
@@ -135,7 +172,7 @@ end)
 
 -----------------------------------------------------------------------------------------------
 
-exports('Items', GetItem)
-exports('ItemList', GetItem)
+exports('Items', function(item) return getItem(nil, item) end)
+exports('ItemList', function(item) return getItem(nil, item) end)
 
 return Items

@@ -7,6 +7,7 @@
 ---@field description? string Text to display in the item tooltip.
 ---@field consume? number Number of items to remove on use.<br>Using a value under 1 will remove durability, if the item cannot be stacked.
 ---@field degrade? number Amount of time for the item durability to degrade to 0, in minutes.
+---@field decay? boolean Remove the item at 0 durability. Not triggered immediately.
 ---@field stack? boolean Set to false to prevent the item from stacking.
 ---@field close? boolean Set to false to keep the inventory open on item use.
 ---@field allowArmed? boolean Set to true to allow an item to be used while a weapon is equipped.
@@ -101,7 +102,7 @@ local function newItem(data)
 		end
 
 		if clientData?.image then
-			clientData.image = clientData.image:match('^[%w]+://') and ('url(%s)'):format(clientData.image) or ('url(%s/%s)'):format(client.imagepath, clientData.image)
+			clientData.image = clientData.image:match('^[%w]+://') and clientData.image or ('%s/%s'):format(client.imagepath, clientData.image)
 		end
 	end
 
@@ -142,7 +143,11 @@ end
 
 for k, v in pairs(data 'items') do
 	v.name = k
-	newItem(v)
+	local success, response = pcall(newItem, v)
+
+    if not success then
+        warn(('An error occurred while creating item "%s" callback!\n^1SCRIPT ERROR: %s^0'):format(k, response))
+    end
 end
 
 ItemList.cash = ItemList.money

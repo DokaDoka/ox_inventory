@@ -18,14 +18,21 @@ function Utils.PlayAnimAdvanced(wait, dict, name, posX, posY, posZ, rotX, rotY, 
 	if wait > 0 then Wait(wait) end
 end
 
-function Utils.Raycast(flag)
+---@param flag number
+---@param destination? vector3
+---@param size? number
+---@return number | false
+---@return number?
+function Utils.Raycast(flag, destination, size)
 	local playerCoords = GetEntityCoords(cache.ped)
-	local plyOffset = GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
-	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, plyOffset.x, plyOffset.y, plyOffset.z, 2.2, flag or 30, cache.ped, 4)
+	destination = destination or GetOffsetFromEntityInWorldCoords(cache.ped, 0.0, 2.2, -0.25)
+	local rayHandle = StartShapeTestCapsule(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, destination.x, destination.y, destination.z, size or 2.2, flag or 30, cache.ped, 4)
 	while true do
 		Wait(0)
-		local result, _, _, _, entityHit = GetShapeTestResult(rayHandle)
+		local result, _, coords, _, entityHit = GetShapeTestResult(rayHandle)
 		if result ~= 1 then
+            -- DrawLine(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, destination.x, destination.y, destination.z, 0, 0, 255, 255)
+            -- DrawLine(playerCoords.x, playerCoords.y, playerCoords.z + 0.5, coords.x, coords.y, coords.z, 255, 0, 0, 255)
 			local entityType
 			if entityHit then entityType = GetEntityType(entityHit) end
 			if entityHit and entityType ~= 0 then
@@ -92,6 +99,8 @@ function Utils.DeleteEntity(entity)
 	end
 end
 
+local rewardTypes = 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 7 | 1 << 10
+
 -- Enables the weapon wheel, but disables the use of inventory items
 -- Mostly used for weaponised vehicles, though could be called for "minigames"
 function Utils.WeaponWheel(state)
@@ -100,7 +109,13 @@ function Utils.WeaponWheel(state)
 	EnableWeaponWheel = state
 	SetWeaponsNoAutoswap(not state)
 	SetWeaponsNoAutoreload(not state)
+
+	if client.suppresspickups then
+		-- CLEAR_PICKUP_REWARD_TYPE_SUPPRESSION | SUPPRESS_PICKUP_REWARD_TYPE
+		return state and N_0x762db2d380b48d04(rewardTypes) or N_0xf92099527db8e2a7(rewardTypes, true)
+	end
 end
+
 exports('weaponWheel', Utils.WeaponWheel)
 
 function Utils.CreateBlip(settings, coords)
